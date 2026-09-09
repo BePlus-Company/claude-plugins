@@ -9976,24 +9976,24 @@ var JSONSchemaGenerator = class {
         const _json = result.schema;
         switch (def.type) {
           case "string": {
-            const json = _json;
-            json.type = "string";
+            const json2 = _json;
+            json2.type = "string";
             const { minimum, maximum, format, patterns, contentEncoding } = schema._zod.bag;
             if (typeof minimum === "number")
-              json.minLength = minimum;
+              json2.minLength = minimum;
             if (typeof maximum === "number")
-              json.maxLength = maximum;
+              json2.maxLength = maximum;
             if (format) {
-              json.format = formatMap[format] ?? format;
-              if (json.format === "")
-                delete json.format;
+              json2.format = formatMap[format] ?? format;
+              if (json2.format === "")
+                delete json2.format;
             }
             if (contentEncoding)
-              json.contentEncoding = contentEncoding;
+              json2.contentEncoding = contentEncoding;
             if (patterns && patterns.size > 0) {
               const regexes = [...patterns];
               if (regexes.length === 1)
-                json.pattern = regexes[0].source;
+                json2.pattern = regexes[0].source;
               else if (regexes.length > 1) {
                 result.schema.allOf = [
                   ...regexes.map((regex) => ({
@@ -10006,41 +10006,41 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "number": {
-            const json = _json;
+            const json2 = _json;
             const { minimum, maximum, format, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
             if (typeof format === "string" && format.includes("int"))
-              json.type = "integer";
+              json2.type = "integer";
             else
-              json.type = "number";
+              json2.type = "number";
             if (typeof exclusiveMinimum === "number")
-              json.exclusiveMinimum = exclusiveMinimum;
+              json2.exclusiveMinimum = exclusiveMinimum;
             if (typeof minimum === "number") {
-              json.minimum = minimum;
+              json2.minimum = minimum;
               if (typeof exclusiveMinimum === "number") {
                 if (exclusiveMinimum >= minimum)
-                  delete json.minimum;
+                  delete json2.minimum;
                 else
-                  delete json.exclusiveMinimum;
+                  delete json2.exclusiveMinimum;
               }
             }
             if (typeof exclusiveMaximum === "number")
-              json.exclusiveMaximum = exclusiveMaximum;
+              json2.exclusiveMaximum = exclusiveMaximum;
             if (typeof maximum === "number") {
-              json.maximum = maximum;
+              json2.maximum = maximum;
               if (typeof exclusiveMaximum === "number") {
                 if (exclusiveMaximum <= maximum)
-                  delete json.maximum;
+                  delete json2.maximum;
                 else
-                  delete json.exclusiveMaximum;
+                  delete json2.exclusiveMaximum;
               }
             }
             if (typeof multipleOf === "number")
-              json.multipleOf = multipleOf;
+              json2.multipleOf = multipleOf;
             break;
           }
           case "boolean": {
-            const json = _json;
-            json.type = "boolean";
+            const json2 = _json;
+            json2.type = "boolean";
             break;
           }
           case "bigint": {
@@ -10088,23 +10088,23 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "array": {
-            const json = _json;
+            const json2 = _json;
             const { minimum, maximum } = schema._zod.bag;
             if (typeof minimum === "number")
-              json.minItems = minimum;
+              json2.minItems = minimum;
             if (typeof maximum === "number")
-              json.maxItems = maximum;
-            json.type = "array";
-            json.items = this.process(def.element, { ...params, path: [...params.path, "items"] });
+              json2.maxItems = maximum;
+            json2.type = "array";
+            json2.items = this.process(def.element, { ...params, path: [...params.path, "items"] });
             break;
           }
           case "object": {
-            const json = _json;
-            json.type = "object";
-            json.properties = {};
+            const json2 = _json;
+            json2.type = "object";
+            json2.properties = {};
             const shape = def.shape;
             for (const key in shape) {
-              json.properties[key] = this.process(shape[key], {
+              json2.properties[key] = this.process(shape[key], {
                 ...params,
                 path: [...params.path, "properties", key]
               });
@@ -10119,15 +10119,15 @@ var JSONSchemaGenerator = class {
               }
             }));
             if (requiredKeys.size > 0) {
-              json.required = Array.from(requiredKeys);
+              json2.required = Array.from(requiredKeys);
             }
             if (def.catchall?._zod.def.type === "never") {
-              json.additionalProperties = false;
+              json2.additionalProperties = false;
             } else if (!def.catchall) {
               if (this.io === "output")
-                json.additionalProperties = false;
+                json2.additionalProperties = false;
             } else if (def.catchall) {
-              json.additionalProperties = this.process(def.catchall, {
+              json2.additionalProperties = this.process(def.catchall, {
                 ...params,
                 path: [...params.path, "additionalProperties"]
               });
@@ -10135,15 +10135,15 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "union": {
-            const json = _json;
-            json.anyOf = def.options.map((x, i) => this.process(x, {
+            const json2 = _json;
+            json2.anyOf = def.options.map((x, i) => this.process(x, {
               ...params,
               path: [...params.path, "anyOf", i]
             }));
             break;
           }
           case "intersection": {
-            const json = _json;
+            const json2 = _json;
             const a = this.process(def.left, {
               ...params,
               path: [...params.path, "allOf", 0]
@@ -10157,17 +10157,17 @@ var JSONSchemaGenerator = class {
               ...isSimpleIntersection(a) ? a.allOf : [a],
               ...isSimpleIntersection(b) ? b.allOf : [b]
             ];
-            json.allOf = allOf;
+            json2.allOf = allOf;
             break;
           }
           case "tuple": {
-            const json = _json;
-            json.type = "array";
+            const json2 = _json;
+            json2.type = "array";
             const prefixItems = def.items.map((x, i) => this.process(x, { ...params, path: [...params.path, "prefixItems", i] }));
             if (this.target === "draft-2020-12") {
-              json.prefixItems = prefixItems;
+              json2.prefixItems = prefixItems;
             } else {
-              json.items = prefixItems;
+              json2.items = prefixItems;
             }
             if (def.rest) {
               const rest = this.process(def.rest, {
@@ -10175,29 +10175,29 @@ var JSONSchemaGenerator = class {
                 path: [...params.path, "items"]
               });
               if (this.target === "draft-2020-12") {
-                json.items = rest;
+                json2.items = rest;
               } else {
-                json.additionalItems = rest;
+                json2.additionalItems = rest;
               }
             }
             if (def.rest) {
-              json.items = this.process(def.rest, {
+              json2.items = this.process(def.rest, {
                 ...params,
                 path: [...params.path, "items"]
               });
             }
             const { minimum, maximum } = schema._zod.bag;
             if (typeof minimum === "number")
-              json.minItems = minimum;
+              json2.minItems = minimum;
             if (typeof maximum === "number")
-              json.maxItems = maximum;
+              json2.maxItems = maximum;
             break;
           }
           case "record": {
-            const json = _json;
-            json.type = "object";
-            json.propertyNames = this.process(def.keyType, { ...params, path: [...params.path, "propertyNames"] });
-            json.additionalProperties = this.process(def.valueType, {
+            const json2 = _json;
+            json2.type = "object";
+            json2.propertyNames = this.process(def.keyType, { ...params, path: [...params.path, "propertyNames"] });
+            json2.additionalProperties = this.process(def.valueType, {
               ...params,
               path: [...params.path, "additionalProperties"]
             });
@@ -10216,17 +10216,17 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "enum": {
-            const json = _json;
+            const json2 = _json;
             const values = getEnumValues(def.entries);
             if (values.every((v) => typeof v === "number"))
-              json.type = "number";
+              json2.type = "number";
             if (values.every((v) => typeof v === "string"))
-              json.type = "string";
-            json.enum = values;
+              json2.type = "string";
+            json2.enum = values;
             break;
           }
           case "literal": {
-            const json = _json;
+            const json2 = _json;
             const vals = [];
             for (const val of def.values) {
               if (val === void 0) {
@@ -10247,23 +10247,23 @@ var JSONSchemaGenerator = class {
             if (vals.length === 0) {
             } else if (vals.length === 1) {
               const val = vals[0];
-              json.type = val === null ? "null" : typeof val;
-              json.const = val;
+              json2.type = val === null ? "null" : typeof val;
+              json2.const = val;
             } else {
               if (vals.every((v) => typeof v === "number"))
-                json.type = "number";
+                json2.type = "number";
               if (vals.every((v) => typeof v === "string"))
-                json.type = "string";
+                json2.type = "string";
               if (vals.every((v) => typeof v === "boolean"))
-                json.type = "string";
+                json2.type = "string";
               if (vals.every((v) => v === null))
-                json.type = "null";
-              json.enum = vals;
+                json2.type = "null";
+              json2.enum = vals;
             }
             break;
           }
           case "file": {
-            const json = _json;
+            const json2 = _json;
             const file = {
               type: "string",
               format: "binary",
@@ -10277,15 +10277,15 @@ var JSONSchemaGenerator = class {
             if (mime) {
               if (mime.length === 1) {
                 file.contentMediaType = mime[0];
-                Object.assign(json, file);
+                Object.assign(json2, file);
               } else {
-                json.anyOf = mime.map((m) => {
+                json2.anyOf = mime.map((m) => {
                   const mFile = { ...file, contentMediaType: m };
                   return mFile;
                 });
               }
             } else {
-              Object.assign(json, file);
+              Object.assign(json2, file);
             }
             break;
           }
@@ -10306,8 +10306,8 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "success": {
-            const json = _json;
-            json.type = "boolean";
+            const json2 = _json;
+            json2.type = "boolean";
             break;
           }
           case "default": {
@@ -10342,12 +10342,12 @@ var JSONSchemaGenerator = class {
             break;
           }
           case "template_literal": {
-            const json = _json;
+            const json2 = _json;
             const pattern = schema._zod.pattern;
             if (!pattern)
               throw new Error("Pattern not found in template literal");
-            json.type = "string";
-            json.pattern = pattern.source;
+            json2.type = "string";
+            json2.pattern = pattern.source;
             break;
           }
           case "pipe": {
@@ -12996,8 +12996,8 @@ var StdioServerTransport = class {
   }
   send(message) {
     return new Promise((resolve3) => {
-      const json = serializeMessage(message);
-      if (this._stdout.write(json)) {
+      const json2 = serializeMessage(message);
+      if (this._stdout.write(json2)) {
         resolve3();
       } else {
         this._stdout.once("drain", resolve3);
@@ -13038,7 +13038,7 @@ function loadConfig() {
   const token = process.env.BEPLUS_API_TOKEN?.trim();
   if (!token) {
     throw new Error(
-      "BEPLUS_API_TOKEN is required. Generate a Personal Access Token in your BePlus account settings (Tokens de acesso) and set it as BEPLUS_API_TOKEN in the MCP config."
+      'Falta credencial. Rode "beplus-mcp login" para autorizar pelo navegador, ou gere um Personal Access Token no painel BePlus (Conta, Credenciais) e coloque em BEPLUS_API_TOKEN na configuracao do MCP.'
     );
   }
   const baseUrl = resolveBaseUrl();
@@ -13326,8 +13326,8 @@ var ZodIssueCode = util.arrayToEnum([
   "not_finite"
 ]);
 var quotelessJson = (obj) => {
-  const json = JSON.stringify(obj, null, 2);
-  return json.replace(/"([^"]+)":/g, "$1:");
+  const json2 = JSON.stringify(obj, null, 2);
+  return json2.replace(/"([^"]+)":/g, "$1:");
 };
 var ZodError2 = class _ZodError extends Error {
   get errors() {
@@ -21229,18 +21229,18 @@ var BeplusClient = class {
       clearTimeout(timer);
     }
     const text = await res.text();
-    let json;
+    let json2;
     if (text) {
       try {
-        json = JSON.parse(text);
+        json2 = JSON.parse(text);
       } catch {
       }
     }
     if (!res.ok) {
-      const message = json?.message || (Array.isArray(json?.error?.formatted) ? json.error.formatted.join(", ") : void 0) || res.statusText || `HTTP ${res.status}`;
-      throw new ApiError(res.status, message, json);
+      const message = json2?.message || (Array.isArray(json2?.error?.formatted) ? json2.error.formatted.join(", ") : void 0) || res.statusText || `HTTP ${res.status}`;
+      throw new ApiError(res.status, message, json2);
     }
-    return json && typeof json === "object" && "result" in json ? json.result : json;
+    return json2 && typeof json2 === "object" && "result" in json2 ? json2.result : json2;
   }
   startGeneration(body) {
     return this.request("POST", "/generations", { body });
@@ -21460,18 +21460,18 @@ async function uploadFile(cfg, ref) {
     clearTimeout(timer);
   }
   const text = await res.text();
-  let json;
+  let json2;
   if (text) {
     try {
-      json = JSON.parse(text);
+      json2 = JSON.parse(text);
     } catch {
     }
   }
   if (!res.ok) {
-    const message = json?.message || res.statusText || `HTTP ${res.status}`;
-    throw new ApiError(res.status, `Upload de "${name}" falhou: ${message}`, json);
+    const message = json2?.message || res.statusText || `HTTP ${res.status}`;
+    throw new ApiError(res.status, `Upload de "${name}" falhou: ${message}`, json2);
   }
-  const fileUrl = json?.result?.file_url ?? json?.file_url;
+  const fileUrl = json2?.result?.file_url ?? json2?.file_url;
   if (!fileUrl) {
     throw new ApiError(0, `O upload de "${name}" n\xE3o retornou uma URL p\xFAblica.`);
   }
@@ -23294,7 +23294,7 @@ ${calls.map(callLine).join("\n\n")}`);
 import { createRequire } from "module";
 var require2 = createRequire(import.meta.url);
 function readVersion() {
-  if ("0.20.1") return "0.20.1";
+  if ("0.21.0") return "0.21.0";
   try {
     const pkg = require2("../package.json");
     return pkg.version ?? "0.0.0-unknown";
@@ -23502,18 +23502,223 @@ async function runDoctor() {
   return code;
 }
 
+// src/oauth.ts
+import crypto from "crypto";
+import { createServer } from "http";
+import { spawn } from "child_process";
+
+// src/credentials.ts
+import { chmod, mkdir, readFile as readFile2, writeFile, unlink } from "fs/promises";
+import { homedir as homedir4 } from "os";
+import { dirname, join as join2 } from "path";
+function credentialsPath() {
+  const base = process.env.XDG_CONFIG_HOME?.trim() || join2(homedir4(), ".config");
+  return join2(base, "beplus-mcp", "credentials.json");
+}
+async function readCredentials() {
+  try {
+    const raw = await readFile2(credentialsPath(), "utf8");
+    const parsed = JSON.parse(raw);
+    if (!parsed.accessToken || !parsed.apiUrl) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+async function writeCredentials(creds) {
+  const path = credentialsPath();
+  await mkdir(dirname(path), { recursive: true, mode: 448 });
+  await writeFile(path, `${JSON.stringify(creds, null, 2)}
+`, { mode: 384 });
+  await chmod(path, 384);
+  return path;
+}
+async function clearCredentials() {
+  try {
+    await unlink(credentialsPath());
+    return true;
+  } catch {
+    return false;
+  }
+}
+var RENEW_MARGIN_MS = 6e4;
+function isExpired(creds) {
+  return typeof creds.expiresAt === "number" && creds.expiresAt - RENEW_MARGIN_MS <= Date.now();
+}
+
+// src/oauth.ts
+var CALLBACK_TIMEOUT_MS = 5 * 6e4;
+async function json(url, init) {
+  let res;
+  try {
+    res = await fetch(url, init);
+  } catch {
+    throw new Error(`Nao consegui falar com ${new URL(url).origin}. Confira a rede e o BEPLUS_API_URL.`);
+  }
+  const text = await res.text();
+  let body;
+  try {
+    body = text ? JSON.parse(text) : void 0;
+  } catch {
+  }
+  if (!res.ok) {
+    const msg = body?.message ?? body?.error_description ?? body?.error ?? `HTTP ${res.status}`;
+    throw new Error(`${msg} (${url})`);
+  }
+  return body;
+}
+async function discover(apiUrl2) {
+  const meta = await json(`${apiUrl2}/.well-known/oauth-authorization-server`);
+  if (!meta.authorization_endpoint || !meta.token_endpoint || !meta.registration_endpoint) {
+    throw new Error("O servidor respondeu a descoberta sem os endpoints obrigatorios.");
+  }
+  return meta;
+}
+function pkce() {
+  const verifier = crypto.randomBytes(32).toString("base64url");
+  return { verifier, challenge: crypto.createHash("sha256").update(verifier).digest("base64url") };
+}
+function openBrowser(url) {
+  const cmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
+  const args = process.platform === "win32" ? ["/c", "start", '""', url] : [url];
+  try {
+    spawn(cmd, args, { stdio: "ignore", detached: true }).unref();
+  } catch {
+  }
+}
+var PAGINA_OK = `<!doctype html><meta charset="utf-8"><title>Pronto</title>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0e1433;color:#f7f6f2">
+<div style="text-align:center;padding:24px"><h1 style="font-size:22px;margin:0 0 8px">Tudo certo</h1>
+<p style="margin:0;opacity:.7">Pode fechar esta aba e voltar para o seu agente.</p></div>`;
+var PAGINA_ERRO = `<!doctype html><meta charset="utf-8"><title>Nao deu</title>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0e1433;color:#f7f6f2">
+<div style="text-align:center;padding:24px"><h1 style="font-size:22px;margin:0 0 8px">Nao foi dessa vez</h1>
+<p style="margin:0;opacity:.7">Volte ao terminal para ver o motivo.</p></div>`;
+function listenForCallback(expectedState) {
+  return new Promise((resolvePort, rejectPort) => {
+    let settle;
+    let fail;
+    const code = new Promise((res, rej) => {
+      settle = res;
+      fail = rej;
+    });
+    const server = createServer((req, res) => {
+      const url = new URL(req.url ?? "/", "http://127.0.0.1");
+      if (url.pathname !== "/callback") {
+        res.writeHead(404).end();
+        return;
+      }
+      const erro = url.searchParams.get("error");
+      const recebido = url.searchParams.get("code");
+      const state = url.searchParams.get("state") ?? "";
+      const ok = !erro && recebido && state === expectedState;
+      res.writeHead(ok ? 200 : 400, { "content-type": "text/html; charset=utf-8" });
+      res.end(ok ? PAGINA_OK : PAGINA_ERRO);
+      server.close();
+      if (erro) return fail(new Error(url.searchParams.get("error_description") || erro));
+      if (!recebido || state !== expectedState) return fail(new Error("Resposta de autorizacao invalida."));
+      settle({ code: recebido, state });
+    });
+    server.on("error", rejectPort);
+    server.listen(0, "127.0.0.1", () => {
+      const addr = server.address();
+      if (!addr || typeof addr === "string") return rejectPort(new Error("Nao consegui abrir a porta local."));
+      const timer = setTimeout(() => {
+        server.close();
+        fail(new Error("Tempo esgotado esperando a autorizacao no navegador."));
+      }, CALLBACK_TIMEOUT_MS);
+      void code.finally(() => clearTimeout(timer));
+      resolvePort({ port: addr.port, code });
+    });
+  });
+}
+function toStored(t, apiUrl2, clientId) {
+  return {
+    accessToken: t.access_token,
+    refreshToken: t.refresh_token,
+    expiresAt: t.expires_in ? Date.now() + t.expires_in * 1e3 : void 0,
+    apiUrl: apiUrl2,
+    clientId
+  };
+}
+async function login(apiUrl2, onUrl) {
+  const meta = await discover(apiUrl2);
+  const state = crypto.randomBytes(24).toString("base64url");
+  const { verifier, challenge } = pkce();
+  const { port, code } = await listenForCallback(state);
+  const redirectUri = `http://127.0.0.1:${port}/callback`;
+  const client = await json(meta.registration_endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      client_name: "beplus-mcp (CLI)",
+      redirect_uris: [redirectUri],
+      token_endpoint_auth_method: "none",
+      grant_types: ["authorization_code", "refresh_token"]
+    })
+  });
+  const authorizeUrl = new URL(meta.authorization_endpoint);
+  authorizeUrl.searchParams.set("response_type", "code");
+  authorizeUrl.searchParams.set("client_id", client.client_id);
+  authorizeUrl.searchParams.set("redirect_uri", redirectUri);
+  authorizeUrl.searchParams.set("code_challenge", challenge);
+  authorizeUrl.searchParams.set("code_challenge_method", "S256");
+  authorizeUrl.searchParams.set("state", state);
+  onUrl(authorizeUrl.toString());
+  openBrowser(authorizeUrl.toString());
+  const { code: authCode } = await code;
+  const token = await json(meta.token_endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      grant_type: "authorization_code",
+      code: authCode,
+      code_verifier: verifier,
+      client_id: client.client_id,
+      redirect_uri: redirectUri
+    })
+  });
+  const path = await writeCredentials(toStored(token, apiUrl2, client.client_id));
+  return { path, authorizeUrl: authorizeUrl.toString() };
+}
+async function tokenFromDisk(apiUrl2) {
+  const creds = await readCredentials();
+  if (!creds) return null;
+  if (creds.apiUrl.replace(/\/$/, "") !== apiUrl2.replace(/\/$/, "")) return null;
+  if (!isExpired(creds)) return creds.accessToken;
+  if (!creds.refreshToken) return null;
+  try {
+    const meta = await discover(apiUrl2);
+    const token = await json(meta.token_endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        grant_type: "refresh_token",
+        refresh_token: creds.refreshToken,
+        client_id: creds.clientId
+      })
+    });
+    await writeCredentials(toStored(token, apiUrl2, creds.clientId));
+    return token.access_token;
+  } catch {
+    return null;
+  }
+}
+
 // src/index.ts
 if (process.argv.length <= 2) assertSupportedNode();
 var HELP = `beplus-mcp ${VERSION}
 Conector MCP da BePlus. Sem argumento, ele sobe o servidor MCP no stdio.
 
 Comandos:
+  login         Autoriza pelo navegador e guarda a credencial. Dispensa o token.
+  logout        Apaga a credencial guardada.
   doctor        Diagnostica a instalacao: Node, API, token e config detectado.
   --version     Mostra a versao do pacote.
   --help        Mostra esta ajuda.
 
 Variaveis de ambiente:
-  BEPLUS_API_TOKEN             Personal Access Token (obrigatorio para subir o servidor).
+  BEPLUS_API_TOKEN             Personal Access Token. Opcional depois de "login".
   BEPLUS_API_URL               Origem da API. Padrao: https://api.beplus.academy
   BEPLUS_VERIFY_ON_START       "0" desliga a checagem do token na subida.
   BEPLUS_INLINE_IMAGES         "0" desliga as imagens embutidas na resposta.
@@ -23535,13 +23740,50 @@ async function runCommand(argv) {
   if (arg === "doctor" || arg === "--doctor") {
     return runDoctor();
   }
+  if (arg === "login") {
+    return runLogin();
+  }
+  if (arg === "logout") {
+    const apagou = await clearCredentials();
+    process.stdout.write(
+      apagou ? `Credencial apagada de ${credentialsPath()}
+` : "Nao havia credencial guardada.\n"
+    );
+    return 0;
+  }
   logError(`argumento desconhecido: ${arg}. Use --help para ver os comandos.`);
   return 1;
+}
+var DEFAULT_API_URL = "https://api.beplus.academy";
+function apiUrl() {
+  return (process.env.BEPLUS_API_URL?.trim() || DEFAULT_API_URL).replace(/\/+$/, "");
+}
+async function runLogin() {
+  try {
+    const { path } = await login(apiUrl(), (url) => {
+      process.stdout.write(`Abrindo o navegador para autorizar.
+Se ele nao abrir, acesse:
+  ${url}
+
+`);
+    });
+    process.stdout.write(`Pronto. Credencial guardada em ${path}
+`);
+    process.stdout.write("Reinicie o seu agente para as ferramentas aparecerem.\n");
+    return 0;
+  } catch (e) {
+    logError(e.message);
+    return 1;
+  }
 }
 async function main() {
   const handled = await runCommand(process.argv.slice(2));
   if (handled !== null) {
     process.exit(handled);
+  }
+  if (!process.env.BEPLUS_API_TOKEN?.trim()) {
+    const doDisco = await tokenFromDisk(apiUrl());
+    if (doDisco) process.env.BEPLUS_API_TOKEN = doDisco;
   }
   let cfg;
   try {
