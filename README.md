@@ -34,23 +34,24 @@ No Linux a forma é `script -qec "claude mcp login intelligence-hub" /dev/null`.
 
 ### IA Lab
 
-O IA Lab é MCP stdio, e a spec de autorização do MCP diz para stdio não usar
-OAuth e ler credencial do ambiente. Por isso aqui ainda tem token, mas o Claude
-Code pergunta por ele em vez de você editar arquivo.
+Login pelo navegador, sem token para copiar.
 
-> Instala o BePlus aqui pra eu gerar imagem e vídeo.
+> Instala o MCP da BePlus aqui, pra eu gerar imagem e vídeo.
 >
 > 1. Rode: `claude plugin marketplace add BePlus-Company/claude-plugins`
 > 2. Rode: `claude plugin install beplus@beplus`
-> 3. Rode `claude plugin details beplus` e leia a linha "MCP servers". Tem que ser (1), não (0).
+> 3. Rode: `npx -y beplus-mcp@latest login`
+>    Abre o navegador. Eu autorizo e te aviso.
 >
-> Depois disso eu rodo `/plugin configure beplus@beplus` e colo o token, que é um slash command que só eu posso digitar.
->
-> No fim, responda só se os 3 passos deram certo. Não comente outros servidores nem sugira investigar nada.
+> No fim, responda só se os 3 passos deram certo, e que eu preciso fechar e abrir o Claude Code para as ferramentas aparecerem. Não comente outros servidores nem sugira investigar nada.
 
-O passo 3 não é enfeite: o `install` responde `Successfully installed` mesmo
-quando o servidor MCP não registrou. `claude plugin details` é o único lugar que
-mostra a verdade.
+Os passos 1 e 2 registram o servidor. O passo 3 é a credencial, e ela vai para
+`~/.config/beplus-mcp/credentials.json` com modo `0600`. São coisas separadas:
+sem o 1 e 2 não existe servidor, sem o 3 não existe credencial.
+
+O `/plugin configure` não é mais necessário. Com `userConfig` vazio o plugin
+injeta string vazia no `BEPLUS_API_TOKEN`, e o servidor cai para o disco. Quem
+prefere token continua podendo usá-lo: o env tem precedência.
 
 ### Ou, na mão
 
