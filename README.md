@@ -11,26 +11,58 @@ Instalação em [INSTALL.md](INSTALL.md). Roteiro para agente em [INSTALL_FOR_AG
 
 ## Peça para o Claude instalar
 
-Cole isto numa sessão do Claude Code e ele resolve sozinho:
+Cole numa sessão do Claude Code e ele resolve sozinho.
+
+### Central de Inteligência
+
+Login pelo navegador, sem token para copiar.
+
+> Instala a Central de Inteligência da BePlus aqui.
+>
+> 1. Rode: `claude mcp add --transport http --scope user intelligence-hub https://api-fanclub.squareweb.app/mcp`
+> 2. Rode: `script -q /dev/null claude mcp login intelligence-hub`
+>    Abre o navegador. Eu faço o login e autorizo.
+> 3. Quando o passo 2 terminar, rode `claude mcp list` e leia a linha do intelligence-hub.
+>
+> Não passe header, chave nem token.
+>
+> No fim, responda só duas coisas: se conectou, e que eu preciso reiniciar o Claude Code para usar as ferramentas. Não comente outros servidores da lista, não sugira investigar nada, e não repita o que já está nos comandos acima.
+
+O `script -q /dev/null` não é enfeite: sem ele o `claude mcp login` morre com
+`stdin isn't a terminal`, porque a ferramenta Bash do agente não é um TTY.
+No Linux a forma é `script -qec "claude mcp login intelligence-hub" /dev/null`.
+
+### IA Lab
+
+O IA Lab é MCP stdio, e a spec de autorização do MCP diz para stdio não usar
+OAuth e ler credencial do ambiente. Por isso aqui ainda tem token, mas o Claude
+Code pergunta por ele em vez de você editar arquivo.
 
 > Instala o BePlus aqui pra eu gerar imagem e vídeo.
 >
-> 1. Adicione o marketplace: rode `claude plugin marketplace add BePlus-Company/claude-plugins`.
-> 2. Instale: rode `claude plugin install beplus@beplus`.
-> 3. Configure o token: rode `/plugin configure beplus@beplus` e cole o meu Personal Access Token, que eu pego no painel da BePlus em Tokens de acesso.
+> 1. Rode: `claude plugin marketplace add BePlus-Company/claude-plugins`
+> 2. Rode: `claude plugin install beplus@beplus`
+> 3. Rode `claude plugin details beplus` e leia a linha "MCP servers". Tem que ser (1), não (0).
 >
-> Me avisa quando estiver pronto.
+> Depois disso eu rodo `/plugin configure beplus@beplus` e colo o token, que é um slash command que só eu posso digitar.
+>
+> No fim, responda só se os 3 passos deram certo. Não comente outros servidores nem sugira investigar nada.
 
-Para a Central de Inteligência, troque `beplus@beplus` por `intelligence-hub@beplus` e use a chave `ih_mcp_` do painel da Central.
+O passo 3 não é enfeite: o `install` responde `Successfully installed` mesmo
+quando o servidor MCP não registrou. `claude plugin details` é o único lugar que
+mostra a verdade.
 
 ### Ou, na mão
 
 ```bash
+# Central de Inteligência
+claude mcp add --transport http --scope user intelligence-hub https://api-fanclub.squareweb.app/mcp
+claude mcp login intelligence-hub
+
+# IA Lab
 claude plugin marketplace add BePlus-Company/claude-plugins
 claude plugin install beplus@beplus --config api_token=SEU_TOKEN
 ```
-
-Sem `--config`, o próprio CLI avisa o que falta: `1 userConfig option not yet set (1 required) — run /plugin configure beplus@beplus`.
 
 ## Estrutura
 
