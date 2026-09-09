@@ -9,10 +9,28 @@ Marketplace de plugins do Claude Code da BePlus. Dois plugins, um manifesto.
 
 Instalação em [INSTALL.md](INSTALL.md). Roteiro para agente em [INSTALL_FOR_AGENTS.md](INSTALL_FOR_AGENTS.md).
 
+## Peça para o Claude instalar
+
+Cole isto numa sessão do Claude Code e ele resolve sozinho:
+
+> Instala o BePlus aqui pra eu gerar imagem e vídeo.
+>
+> 1. Adicione o marketplace: rode `claude plugin marketplace add BePlus-Company/claude-plugins`.
+> 2. Instale: rode `claude plugin install beplus@beplus`.
+> 3. Configure o token: rode `/plugin configure beplus@beplus` e cole o meu Personal Access Token, que eu pego no painel da BePlus em Tokens de acesso.
+>
+> Me avisa quando estiver pronto.
+
+Para a Central de Inteligência, troque `beplus@beplus` por `intelligence-hub@beplus` e use a chave `ih_mcp_` do painel da Central.
+
+### Ou, na mão
+
 ```bash
 claude plugin marketplace add BePlus-Company/claude-plugins
 claude plugin install beplus@beplus --config api_token=SEU_TOKEN
 ```
+
+Sem `--config`, o próprio CLI avisa o que falta: `1 userConfig option not yet set (1 required) — run /plugin configure beplus@beplus`.
 
 ## Estrutura
 
