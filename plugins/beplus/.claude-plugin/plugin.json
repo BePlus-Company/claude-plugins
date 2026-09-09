@@ -1,0 +1,30 @@
+{
+  "name": "beplus",
+  "displayName": "BePlus IA Lab",
+  "version": "0.1.0",
+  "description": "Conector MCP do IA Lab da BePlus: gera imagem, video, audio e musica pela sua conta, e consulta calls, projetos e clientes.",
+  "author": {
+    "name": "BePlus Company",
+    "url": "https://github.com/BePlus-Company"
+  },
+  "homepage": "https://github.com/BePlus-Company/claude-plugins",
+  "repository": "https://github.com/BePlus-Company/claude-plugins",
+  "license": "UNLICENSED",
+  "keywords": [
+    "beplus",
+    "mcp",
+    "ia-lab",
+    "image-generation",
+    "video-generation"
+  ],
+  "userConfig": {
+    "api_token": {
+      "type": "string",
+      "title": "Token da BePlus",
+      "description": "Seu Personal Access Token. Pegue em Configuracoes da conta, Tokens de acesso. Fica guardado no chaveiro do sistema, nunca em arquivo de projeto.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "mcpServers": "./.mcp.json"
+}

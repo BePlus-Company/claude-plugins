@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "beplus": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/index.js"],
+      "env": { "BEPLUS_API_TOKEN": "${user_config.api_token}" }
+    }
+  }
+}

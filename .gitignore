@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.log
+
+# server/index.js NAO entra aqui: o bundle tem que ser versionado,
+# senao o plugin instalado por marketplace nao tem o que executar.

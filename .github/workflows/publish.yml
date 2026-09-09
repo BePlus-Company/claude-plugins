@@ -1,0 +1,79 @@
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    # Trusted publishing (OIDC) so funciona em runner HOSPEDADO do GitHub.
+    # Runner self-hosted nao e suportado pelo npm.
+    # id-token: write e o que permite gerar o token OIDC. Nao existe NPM_TOKEN aqui.
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node >= 22.14.0 e npm >= 11.5.1 sao o piso do trusted publishing.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm to an OIDC-capable version
+        run: npm install -g npm@latest
+
+      # Falhar aqui e barato; falhar no publish gasta uma tag.
+      - name: Assert npm >= 11.5.1 and Node >= 22.14.0
+        run: |
+          node --version
+          npm --version
+          node -e "
+            const min = (v, floor) => {
+              const a = v.replace(/^v/, '').split('.').map(Number);
+              const b = floor.split('.').map(Number);
+              for (let i = 0; i < 3; i++) {
+                if (a[i] > b[i]) return true;
+                if (a[i] < b[i]) return false;
+              }
+              return true;
+            };
+            const npmVersion = require('child_process')
+              .execSync('npm --version')
+              .toString()
+              .trim();
+            if (!min(process.version, '22.14.0')) {
+              console.error('Node ' + process.version + ' abaixo do piso 22.14.0 do OIDC');
+              process.exit(1);
+            }
+            if (!min(npmVersion, '11.5.1')) {
+              console.error('npm ' + npmVersion + ' abaixo do piso 11.5.1 do OIDC');
+              process.exit(1);
+            }
+            console.log('OIDC ok: node ' + process.version + ', npm ' + npmVersion);
+          "
+
+      - name: Publish with OIDC
+        run: npm publish --access restricted
+
+# PASSO MANUAL QUE FALTA, e que nenhum yml resolve:
+#
+# 1. Entre em npmjs.com, abra a pagina do pacote, aba Settings, secao
+#    "Trusted publisher", e cadastre:
+#      Publisher:   GitHub Actions
+#      Organization: BePlus-Company
+#      Repository:   claude-plugins
+#      Workflow:     publish.yml
+#      Environment:  (deixe vazio, este workflow nao usa environment)
+#
+# 2. O cadastro e IMUTAVEL depois de criado: para mudar qualquer campo voce
+#    apaga e cria outro. O limite e de 10 trusted publishers por pacote.
+#
+# 3. O pacote precisa existir antes. Na primeira publicacao rode um
+#    "npm publish" manual com token, cadastre o trusted publisher, e so
+#    depois deixe este workflow assumir.

@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: validate + smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Sem pin de versao de proposito: a CLI e quem interpreta o manifesto,
+      # entao uma quebra de spec tem que aparecer aqui e nao no install do usuario.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: claude plugin validate --strict
+        run: claude plugin validate . --strict
+
+      # Handshake JSON-RPC real contra o bundle vendorizado. Nao toca na rede:
+      # tools/list responde antes de qualquer chamada a API.
+      # Fica vermelho ate plugins/beplus/server/index.js ser commitado, e e o
+      # comportamento certo: sem o bundle o plugin nao tem o que executar.
+      #
+      # VERIFY_ON_START=0 e obrigatorio aqui: o servidor passou a morrer na
+      # subida com token invalido, e a CI nao tem PAT. O que se testa neste passo
+      # e o transporte e a lista de tools, nao a autenticacao.
+      - name: Smoke stdio (initialize + tools/list, 24 tools)
+        env:
+          BEPLUS_API_TOKEN: pat_ci_sem_valor_real
+          BEPLUS_VERIFY_ON_START: '0'
+        run: node scripts/smoke-stdio.mjs

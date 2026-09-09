@@ -1,0 +1,38 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "beplus",
+  "owner": {
+    "name": "BePlus Company",
+    "url": "https://github.com/BePlus-Company"
+  },
+  "description": "Conectores MCP da BePlus para o Claude Code: IA Lab e Central de Inteligencia.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "beplus",
+      "source": "./plugins/beplus",
+      "displayName": "BePlus IA Lab",
+      "description": "Gera imagem, video, audio e musica pela conta BePlus, e consulta calls, projetos e clientes. 24 tools.",
+      "version": "0.1.0",
+      "author": { "name": "BePlus Company", "url": "https://github.com/BePlus-Company" },
+      "homepage": "https://github.com/BePlus-Company/claude-plugins",
+      "repository": "https://github.com/BePlus-Company/claude-plugins",
+      "license": "UNLICENSED",
+      "category": "ai",
+      "keywords": ["beplus", "mcp", "ia-lab", "image-generation", "video-generation"]
+    },
+    {
+      "name": "intelligence-hub",
+      "source": "./plugins/intelligence-hub",
+      "displayName": "BePlus Central de Inteligencia",
+      "description": "Busca no RAG, no radar e nas calls da Central de Inteligencia, por HTTP, sem Node na maquina.",
+      "version": "0.1.0",
+      "author": { "name": "BePlus Company", "url": "https://github.com/BePlus-Company" },
+      "homepage": "https://github.com/BePlus-Company/claude-plugins",
+      "repository": "https://github.com/BePlus-Company/claude-plugins",
+      "license": "UNLICENSED",
+      "category": "ai",
+      "keywords": ["beplus", "mcp", "intelligence-hub", "rag", "calls"]
+    }
+  ]
+}

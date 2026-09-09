@@ -1,0 +1,30 @@
+{
+  "name": "intelligence-hub",
+  "displayName": "BePlus Central de Inteligencia",
+  "version": "0.1.0",
+  "description": "Conector MCP da Central de Inteligencia da BePlus por HTTP: RAG, radar e calls, sem precisar de Node na maquina.",
+  "author": {
+    "name": "BePlus Company",
+    "url": "https://github.com/BePlus-Company"
+  },
+  "homepage": "https://github.com/BePlus-Company/claude-plugins",
+  "repository": "https://github.com/BePlus-Company/claude-plugins",
+  "license": "UNLICENSED",
+  "keywords": [
+    "beplus",
+    "mcp",
+    "intelligence-hub",
+    "rag",
+    "calls"
+  ],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Chave da Central de Inteligencia",
+      "description": "Sua chave pessoal, gerada no painel da Central em Configuracoes. Comeca com ih_mcp_. Fica guardada no chaveiro do sistema.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "mcpServers": "./.mcp.json"
+}
